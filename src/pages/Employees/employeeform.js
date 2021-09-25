@@ -23,12 +23,35 @@ const initialfvalues = {
   hireDate: new Date(),
   isPermanent: false,
 };
+
 function EmployeeForm() {
   // const classes = useStyles();
-  const { values, setValues, handleInputChange } = UseForm(initialfvalues);
+  const { values, setValues, errors, setErrors, handleInputChange } =
+    UseForm(initialfvalues);
+
+  //validation for input
+  const validate = () => {
+    let temp = {}
+    temp.fullName = values.fullName ? "" : "This field is required."
+    temp.email = (/$^|.+@..+/).test(values.email) ? "" : "Email is not valid."
+    temp.mobile = (values.mobile.length) > 9 ? "" : "Minimum of 10 numbers are required."
+    temp.departmentId = values.departmentId !== 0 ? "" : "This field is required."
+
+    setErrors({
+      ...temp
+    })
+
+    return Object.values(temp).every(x => x == "")
+  }
+
+  //to handle the submit button
+  const handleSubmit = e  => {
+    e.preventDefault();
+    if (validate()) window.alert("testing");
+  };
 
   return (
-    <Form>
+    <Form onSubmit={handleSubmit}>
       {/* A grid with two rows */}
       <Grid container>
         {/* First grid */}
@@ -38,7 +61,8 @@ function EmployeeForm() {
             name="fullName"
             label="Full Name"
             value={values.fullName}
-            onChange={handleInputChange}
+            onChange={handleInputChange} 
+            error={errors.fullName}
           />
 
           {/* second item == text field for email */}
@@ -47,6 +71,7 @@ function EmployeeForm() {
             name="email"
             value={values.email}
             onChange={handleInputChange}
+            error={errors.email}
           />
 
           {/* second item == text field for email */}
@@ -55,9 +80,10 @@ function EmployeeForm() {
             name="mobile"
             value={values.mobile}
             onChange={handleInputChange}
+            error={errors.mobile}
           />
 
-          {/* second item == text field for email */}
+          {/* second item == text field for city */}
           <Controls.Input
             label="City"
             name="city"
@@ -84,6 +110,7 @@ function EmployeeForm() {
             value={values.departmentId}
             onChange={handleInputChange}
             options={employeeService.getDepartmentCollection()}
+            error={errors.departmentId}
           />
 
           {/* third item == datepicker */}
@@ -105,7 +132,7 @@ function EmployeeForm() {
           {/* for the submit Button */}
           <div>
             <Controls.Button type="submit" text="Submit" />
-            <Controls.Button  text="Reset" color ="default" />
+            <Controls.Button text="Reset" color="default" />
           </div>
         </Grid>
       </Grid>
